@@ -1,9 +1,10 @@
-const contactsRepo = require("../../models/contacts");
 const { addContactSchema } = require("../../schemas");
+const { ContactModel } = require("../../database/models");
+const { mapContactOutput } = require("./services/contact-mapping.service");
 
 const createContact = async (req, res, next) => {
   try {
-    const { name, email, phone } = req.body;
+    const { name, email, phone, favorite } = req.body;
 
     const { error } = addContactSchema.validate({ name, email, phone });
     if (error) {
@@ -12,8 +13,15 @@ const createContact = async (req, res, next) => {
       err.code = 400;
       throw err;
     }
-    const newContacts = await contactsRepo.addContact(name, email, phone);
-    res.status(201).json(newContacts);
+    const newContacts = await ContactModel.create({
+      name,
+      email,
+      phone,
+      favorite,
+    });
+
+    const mappedContact = mapContactOutput(newContacts);
+    res.status(201).json(mappedContact);
   } catch (error) {
     next(error);
   }

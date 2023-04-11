@@ -1,20 +1,17 @@
-const { addContactSchema } = require("../../schemas");
+const { addContactStatusUpdateSchema } = require("../../schemas");
 const { ContactModel } = require("../../database/models");
 const { mapContactOutput } = require("./services/contact-mapping.service");
 
-const updateOneContact = async (req, res, next) => {
+const updateStatusContact = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { name, email, phone, favorite } = req.body;
+    const { favorite } = req.body;
 
-    const { error } = addContactSchema.validate({
-      name,
-      email,
-      phone,
+    const { error } = addContactStatusUpdateSchema.validate({
       favorite,
     });
     if (error) {
-      const err = new Error("missing fields");
+      const err = new Error("missing field favorite");
       err.code = 400;
       throw err;
     }
@@ -22,9 +19,6 @@ const updateOneContact = async (req, res, next) => {
     const result = await ContactModel.findByIdAndUpdate(
       id,
       {
-        name,
-        email,
-        phone,
         favorite,
       },
       { new: true }
@@ -47,5 +41,5 @@ const updateOneContact = async (req, res, next) => {
 };
 
 module.exports = {
-  updateOneContact,
+  updateStatusContact,
 };
