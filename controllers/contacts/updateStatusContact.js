@@ -1,43 +1,34 @@
 const { addContactStatusUpdateSchema } = require("../../schemas");
 const { ContactModel } = require("../../database/models");
-const { mapContactOutput } = require("./services/contact-mapping.service");
+const { mapContactOutput } = require("../../services/contact-mapping.service");
+const { createHttpException } = require("../../services");
 
 const updateStatusContact = async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const { favorite } = req.body;
+  const { id } = req.params;
+  const { favorite } = req.body;
 
-    const { error } = addContactStatusUpdateSchema.validate({
-      favorite,
-    });
-    if (error) {
-      const err = new Error("missing field favorite");
-      err.code = 400;
-      throw err;
-    }
-
-    const result = await ContactModel.findByIdAndUpdate(
-      id,
-      {
-        favorite,
-      },
-      { new: true }
-    ).catch((error) => {
-      const err = Error(error.message);
-      err.code = 400;
-      throw err;
-    });
-    if (result === null) {
-      const err = new Error("Not found");
-      err.code = 404;
-      throw err;
-    }
-
-    const mappedContact = mapContactOutput(result);
-    res.json(mappedContact);
-  } catch (error) {
-    next(error);
+  const { error } = addContactStatusUpdateSchema.validate({
+    favorite,
+  });
+  if (error) {
+    throw createHttpException(400, "missing field favorite");
   }
+
+  const result = await ContactModel.findByIdAndUpdate(
+    id,
+    {
+      favorite,
+    },
+    { new: true }
+  ).catch((error) => {
+    throw createHttpException(400, error.message);
+  });
+  if (result === null) {
+    throw createHttpException(404, "Not found");
+  }
+
+  const mappedContact = mapContactOutput(result);
+  res.json(mappedContact);
 };
 
 module.exports = {
