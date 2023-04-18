@@ -1,15 +1,23 @@
 const { ContactModel } = require("../../database/models");
-const { mapContactOutput } = require("./services/contact-mapping.service");
+const { mapContactOutput } = require("../../services/contact-mapping.service");
 
 const getContacts = async (req, res, next) => {
-  try {
-    const contacts = await ContactModel.find({});
+  const { _id: owner } = req.user;
+  const { page, limit, favorite } = req.query;
 
-    const mappedContacts = contacts.map(mapContactOutput);
-    res.json(mappedContacts);
-  } catch (error) {
-    next(error);
+  let searchCriteries = { owner };
+
+  if (favorite) {
+    searchCriteries.favorite = favorite;
   }
+
+  const contacts = await ContactModel.find(searchCriteries, null, {
+    skip: (page - 1) * limit,
+    limit: limit,
+  }).populate("owner", "email subscription");
+
+  const mappedContacts = contacts.map(mapContactOutput);
+  res.json(mappedContacts);
 };
 
 module.exports = {
