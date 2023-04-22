@@ -6,6 +6,7 @@ const {
   createJWT,
 } = require("../../services");
 const { addUserSchema } = require("../../schemas");
+const gravatar = require("gravatar");
 
 const signUp = async (req, res, next) => {
   const { email, password } = req.body;
@@ -16,10 +17,12 @@ const signUp = async (req, res, next) => {
   }
 
   const passwordHash = await createHash(password);
+  const avatarURL = gravatar.url(email);
 
   const newUser = await UserModel.create({
     email,
     passwordHash,
+    avatarURL,
   }).catch((error) => {
     throw createHttpException(409, "Email in use");
   });

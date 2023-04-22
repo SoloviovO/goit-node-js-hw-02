@@ -17,7 +17,7 @@ const createContact = async (req, res, next) => {
     email,
     phone,
     favorite,
-    owner: user,
+    owner: user._id,
   });
 
   const mappedContact = mapContactOutput(newContacts);

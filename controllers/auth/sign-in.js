@@ -21,7 +21,7 @@ const signIn = async (req, res, next) => {
   }
 
   const sessionKey = crypto.randomUUID();
-  await UserModel.findByIdAndUpdate(user.id, { sessionKey });
+  await UserModel.findByIdAndUpdate(user._id, { sessionKey });
 
   const accessJWT = createJWT({
     userId: String(user._id),

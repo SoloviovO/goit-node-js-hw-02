@@ -3,7 +3,7 @@ const { addUserUpdateSubscriptionSchema } = require("../../schemas");
 const { createHttpException, mapContactOutput } = require("../../services");
 
 const updateUserSubscription = async (req, res, next) => {
-  const { id } = req.params;
+  const { _id } = req.user;
   const { subscription } = req.body;
 
   const { error } = addUserUpdateSubscriptionSchema.validate({
@@ -14,7 +14,7 @@ const updateUserSubscription = async (req, res, next) => {
   }
 
   const result = await UserModel.findByIdAndUpdate(
-    id,
+    _id,
     {
       subscription,
     },
