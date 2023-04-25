@@ -20,7 +20,17 @@ const addUserUpdateSubscriptionSchema = Joi.object({
     .valid(...Object.values(USER_RULE)),
 });
 
+const emailSchema = Joi.object({
+  email: Joi.string()
+    .email({
+      minDomainSegments: 2,
+      tlds: { allow: ["com", "net"] },
+    })
+    .required(),
+});
+
 module.exports = {
   addUserSchema,
   addUserUpdateSubscriptionSchema,
+  emailSchema,
 };

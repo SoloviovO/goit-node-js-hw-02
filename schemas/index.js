@@ -5,6 +5,7 @@ const {
 const {
   addUserSchema,
   addUserUpdateSubscriptionSchema,
+  emailSchema,
 } = require("./add-user.schema");
 
 module.exports = {
@@ -12,4 +13,5 @@ module.exports = {
   addContactSchema,
   addContactStatusUpdateSchema,
   addUserUpdateSubscriptionSchema,
+  emailSchema,
 };

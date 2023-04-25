@@ -7,6 +7,13 @@ const router = express.Router();
 
 router.post("/register", controllerWrapper(authController.signUp));
 
+router.get(
+  "/verify/:verificationToken",
+  controllerWrapper(authController.verifyEmail)
+);
+
+router.post("/verify", controllerWrapper(authController.resendVerifyEmail));
+
 router.post("/login", controllerWrapper(authController.signIn));
 
 router.get(

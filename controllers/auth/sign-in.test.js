@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 const request = require("supertest");
 const gravatar = require("gravatar");
 require("dotenv").config();
+const { nanoid } = require("nanoid");
 
 const app = require("../../app");
 const { UserModel } = require("../../database/models");
@@ -13,13 +14,15 @@ describe("test auth routes", () => {
   let server;
   beforeAll(() => (server = app.listen(3000)));
   afterAll(() => server.close());
-
+  const email = "testlogin@mail.com";
   beforeEach(async () => {
     await mongoose.connect(DB_HOST);
     const avatarURL = gravatar.url("email");
+    const verificationToken = nanoid();
     const user = {
-      email: "testlogin@mail.com",
+      email: email,
       avatarURL,
+      verificationToken,
     };
     const password = "123456789";
 
@@ -40,6 +43,11 @@ describe("test auth routes", () => {
       email: "testlogin@mail.com",
       password: "123456789",
     };
+    const user = await UserModel.findOne({ email });
+    await UserModel.findByIdAndUpdate(user._id, {
+      verify: true,
+      verificationToken: user.verificationToken,
+    });
 
     const response = await request(app).post("/users/login").send(loginUser);
     expect(response.statusCode).toBe(200);
